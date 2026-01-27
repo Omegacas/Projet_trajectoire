@@ -5,6 +5,7 @@
 
 using namespace std;
 
+<<<<<<< HEAD
 //outils vecteurs
 ostream& operator<<(ostream& os ,const vector<double>& v)
 {
@@ -75,3 +76,6 @@ class obstacle
         }
     }
 }
+=======
+
+>>>>>>> refs/remotes/origin/main
