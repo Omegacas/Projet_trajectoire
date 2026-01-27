@@ -5,7 +5,6 @@
 
 using namespace std;
 
-<<<<<<< HEAD
 //outils vecteurs
 ostream& operator<<(ostream& os ,const vector<double>& v)
 {
@@ -46,12 +45,23 @@ vector<double> operator-(const vector<double>& u, const vector<double>& v)
     return w;
 }
 
+vector<double> operator*(const double& s, const vector<double>& u) {
+    vector<double> w = u;
+    for (auto& wi : w) wi *= s;
+    return w;
+}
+
+vector<double> operator*(const vector<double>& u, const double& s) {
+    return s * u;
+}
+
 
 // classe obstacle
 class obstacle
 {
     protected:
     vector<vector<double>> sommets; //sommets dans le sens trigo
+    vector<vector<double>> aretes; //vecteurs orientés dans le sens trigo
     vector<vector<double>> normales; //normales des sommets SiSi+1
     int nbsommets;
     public :
@@ -61,21 +71,30 @@ class obstacle
         for (int i = 0; i<nbsommets; ++i)
         {
             vector<double> v = sommets[i];
-            vector<double> w = sommets [(i+1)%nbsommets]; //si i+1=n, on retombe au sommet 0
-            vector<double> arete = w-v;
-            normales[i][0] = -arete[1];
-            normales[i][1] = arete[0];
+            vector<double> w = sommets [(i+1)%nbsommets]; //si i+1=nbsommets, on retombe au sommet 0
+            aretes[i] = w-v;
+            normales[i][0] = -aretes[i][1];
+            normales[i][1] = aretes[i][0];
         }
     }
+    virtual ~obstacle(){};
     virtual void print(ostream& out) const
     {
         for (int i = 0; i<nbsommets; ++i)
         {
             out << sommets[i];
-            out
         }
     }
-}
-=======
+    virtual vector<double> intersection(const double& a, const double& b) //droite y=ax+b
+    {
+        
+    }
+};
 
->>>>>>> refs/remotes/origin/main
+ostream& operator<<(ostream& os, const obstacle& O) 
+{
+    O.print(os);
+    return os;
+}
+
+//penser à réindexer les sommets des obstacles lorsqu'on les mettra tous dans un seul graphe
