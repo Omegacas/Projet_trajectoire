@@ -6,6 +6,23 @@
 using namespace std;
 
 //outils vecteurs
+ostream& operator<<(ostream& os ,const vector<double>& v)
+{
+    int n = v.size();
+    if (v.empty()) {
+            os << "()";
+            return os;
+        }
+    os<<"(" ;
+    for (int i = 0; i < n; ++i) 
+        {
+        os << v[i];
+        if (i < n - 1) os << ",";
+        }
+        os << ")";
+    return os ;
+}
+
 vector<double> operator+(const vector<double>& u, const vector<double>& v)
 {
     int n=u.size();
@@ -42,9 +59,12 @@ class obstacle
         nbsommets = sommets.size();
         for (int i = 0; i<nbsommets; ++i)
         {
-            double x = sommets[i][0];
-            double y = sommets[i][1];
-            normales[i]
+            vector<double> v = sommets[i];
+            vector<double> w = sommets [(i+1)%nbsommets]; //si i+1=n, on retombe au sommet 0
+            vector<double> arete = w-v;
+            normales[i][0] = -arete[1];
+            normales[i][1] = arete[0];
         }
     }
+    virtual void print(ostream)
 }
