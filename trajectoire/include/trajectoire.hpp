@@ -66,5 +66,11 @@ class obstacle
             normales[i][1] = arete[0];
         }
     }
-    virtual void print(ostream)
+    virtual void print(ostream& out) const
+    {
+        for (int i = 0; i<nbsommets; ++i)
+        {
+            
+        }
+    }
 }
