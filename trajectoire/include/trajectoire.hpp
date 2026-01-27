@@ -71,6 +71,7 @@ class obstacle
         for (int i = 0; i<nbsommets; ++i)
         {
             out << sommets[i];
+            out
         }
     }
 }
