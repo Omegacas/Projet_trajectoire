@@ -36,11 +36,11 @@ vector<vector<double>> dijkstra(vector<vector<double>> matrice_graphe, int depar
         parcours.push_back(etape);
 
         for (int i = 0; i < n; i++) {
-            if (matrice_graphe[etape][i] > 0 && visites[i]!=1) {
-                double nouvelle_dist = tableau[etape] + matrice_graphe[etape][i];
-                if (nouvelle_dist < tableau[i]) {
-                    tableau[i] = nouvelle_dist;
-                    predecesseur[i] = etape;
+            if (matrice_graphe(etape)(i) > 0 && visites(i)!=1) {
+                double nouvelle_dist = tableau(etape) + matrice_graphe(etape)(i);
+                if (nouvelle_dist < tableau(i)) {
+                    tableau(i) = nouvelle_dist;
+                    predecesseur(i) = etape;
                 }
             }
         }
@@ -49,8 +49,8 @@ vector<vector<double>> dijkstra(vector<vector<double>> matrice_graphe, int depar
         double dist_min = 999999;
         int prochain_sommet = -1;
         for (int i = 0; i < n; i++) {
-            if (visites[i]!=1 && tableau[i] < dist_min) {
-                dist_min = tableau[i];
+            if (visite(i)!=1 && tableau(i) < dist_min) {
+                dist_min = tableau(i);
                 prochain_sommet = i;
             }
         }
@@ -61,11 +61,19 @@ vector<vector<double>> dijkstra(vector<vector<double>> matrice_graphe, int depar
         parcours.push_back(arrivee);}
     }
 
-    
-
-
-
-        
-        
+    int taille = 0;
+    for (int v = arrivee; v != -1; v = predecesseur[v]) {
+        taille++;
     }
+
+    vector<int> chemin(taille);
+    int position = taille - 1;
+
+    for (int v = arrivee; v != -1; v = predecesseur[v]) {
+        chemin[position] = v;
+        position--;
+    }
+
+    return chemin;
+}
 // retourne un vecteur avec les sommets parcourus
