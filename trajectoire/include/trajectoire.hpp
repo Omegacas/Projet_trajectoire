@@ -85,9 +85,34 @@ class obstacle
             out << sommets[i];
         }
     }
-    virtual vector<double> intersection(const double& a, const double& b) //droite y=ax+b
+    virtual vector<double> intersection(const double& a, const double& b) //droite y=ax+b (traiter aussi le cas d'une droite verticale)
     {
-        
+        for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
+        {
+            vector<double> arete = aretes[i];
+            vector<double> s = sommets[i];
+            //on suppose ici que aretes[i][0]!=0 (cas =0 à traiter avec un if)
+            double pente_arete = arete[1]/arete[0];
+            double ord = s[1] - pente_arete*s[0]; //calcul de l'ordonnée à l'origine de la droite de l'arete
+            if (abs(pente_arete - a)<1e-5) //teste si le côté et la droite ont la même pente
+            {
+                if (abs(ord-b)<1e-5)// teste si même ordonnée à l'origine 
+                {
+                    return s;
+                }
+            }
+            else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
+            {
+                vector<double> point_intersection;
+                point_intersection[0] = (b-ord)/(pente_arete - a); //formule de cramer pour résoudre le système 2x2
+                point_intersection[1] = (b*pente_arete-a*ord)/(pente_arete - a);
+                if (sommets[i][1]<point_intersection[1] && sommets[i+1][1]>point_intersection[1]) //on vérifie que le point d'intersection est sur le côté
+                {
+                    return point_intersection;
+                }
+            }
+        }
+        return {};
     }
 };
 
