@@ -6,6 +6,6 @@
 
 
 vector<vector<double>> dijkstra(Graph* graph, int start_id, int end_id) {
-    return {}; 
+    
 }
-// retourne un vecteur avec les sommets parcourus
+// retourne u n vecteur avec les sommets parcourus
