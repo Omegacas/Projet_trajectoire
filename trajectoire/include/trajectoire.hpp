@@ -91,25 +91,31 @@ class obstacle
         {
             vector<double> arete = aretes[i];
             vector<double> s = sommets[i];
-            //on suppose ici que aretes[i][0]!=0 (cas =0 à traiter avec un if)
-            double pente_arete = arete[1]/arete[0];
-            double ord = s[1] - pente_arete*s[0]; //calcul de l'ordonnée à l'origine de la droite de l'arete
-            if (abs(pente_arete - a)<1e-5) //teste si le côté et la droite ont la même pente
+            if (aretes[i][0]>1e-5) //cas où le côté a une pente non nulle
             {
-                if (abs(ord-b)<1e-5)// teste si même ordonnée à l'origine 
+                double pente_arete = arete[1]/arete[0];
+                double ord = s[1] - pente_arete*s[0]; //calcul de l'ordonnée à l'origine de la droite de l'arete
+                if (abs(pente_arete - a)<1e-5) //teste si le côté et la droite ont la même pente
                 {
-                    return s;
+                    if (abs(ord-b)<1e-5)// teste si même ordonnée à l'origine 
+                    {
+                        return s;
+                    }
+                }
+                else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
+                {
+                    vector<double> point_intersection;
+                    point_intersection[0] = (b-ord)/(pente_arete - a); //formule de cramer pour résoudre le système 2x2
+                    point_intersection[1] = (b*pente_arete-a*ord)/(pente_arete - a);
+                    if (sommets[i][1]<point_intersection[1] && sommets[i+1][1]>point_intersection[1]) //on vérifie que le point d'intersection est sur le côté
+                    {
+                        return point_intersection;
+                    }
                 }
             }
-            else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
+            else //cas où le côté est vertical
             {
-                vector<double> point_intersection;
-                point_intersection[0] = (b-ord)/(pente_arete - a); //formule de cramer pour résoudre le système 2x2
-                point_intersection[1] = (b*pente_arete-a*ord)/(pente_arete - a);
-                if (sommets[i][1]<point_intersection[1] && sommets[i+1][1]>point_intersection[1]) //on vérifie que le point d'intersection est sur le côté
-                {
-                    return point_intersection;
-                }
+
             }
         }
         return {};
@@ -123,3 +129,34 @@ ostream& operator<<(ostream& os, const obstacle& O)
 }
 
 //penser à réindexer les sommets des obstacles lorsqu'on les mettra tous dans un seul graphe
+
+//classe arc
+
+class arc
+{
+    protected:
+    vector<double> sommet1;
+    vector<double> sommet2;
+    double poids;
+    public:
+    double acces_poids() const {return poids;}
+};
+
+class graph
+{
+    protected:
+    vector<arc> arcs;
+    int nb_arcs;
+    public:
+    graph (const vector<arc>& u) : arcs(u)
+    {
+        nb_arcs=arcs.size();
+        for (int i=0;i<nb_arcs;++i)
+        {
+            if (arcs[i].acces_poids() <1e-5)
+            {
+                
+            }
+        }
+    }
+}
