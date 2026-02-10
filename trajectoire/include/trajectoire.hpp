@@ -142,9 +142,19 @@ class obstacle
         for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
         {
             vector<double> arete = aretes[i];
-            if ((v[0]*arete[1]-v[1]*arete[0])<1e-3) //vecteurs colinéaires 
+            vector<double> s = sommets[i];
+            if ((v[0]*arete[1]-v[1]*arete[0])<1e-5) //vecteurs directeurs de la droite et de l'arete colinéaires 
             {
-                
+                vector<double> w = s-a;
+                if ((v[0]*w[1]-v[1]*w[0])<1e-5) //teste si droite superposée avec l'arête
+                {
+                    return s; // s est un des points d'intersection (il y en a une infinité)
+                }
+            }
+            else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
+            {
+                double t = ((s[0]-a[0])*(-arete[1])+(s[1]-a[1])*arete[0])/(arete[0]*v[1]-arete[1]*v[0]);
+                //pt d'intersection est vt+a;
             }
         }
     }
