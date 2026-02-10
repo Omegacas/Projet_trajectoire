@@ -45,16 +45,33 @@ vector<double> operator-(const vector<double>& u, const vector<double>& v)
     return w;
 }
 
-vector<double> operator*(const double& s, const vector<double>& u) {
+vector<double> operator*(const double& s, const vector<double>& u) 
+{
     vector<double> w = u;
     for (auto& wi : w) wi *= s;
     return w;
 }
 
-vector<double> operator*(const vector<double>& u, const double& s) {
+vector<double> operator*(const vector<double>& u, const double& s) 
+{
     return s * u;
 }
 
+double operator|(const vector<double>& u, const vector<double>& v)
+{
+    double ps = 0;
+    int n = min(u.size(), v.size());
+    for (int i = 0;i<n;i++)
+    {
+        ps += u[i]*v[i];
+    }
+    return ps;
+}
+
+double norme2(const vector<double>& u) 
+{
+    return sqrt(u | u);
+}
 
 // classe obstacle
 class obstacle
@@ -85,7 +102,7 @@ class obstacle
             out << sommets[i];
         }
     }
-    virtual vector<double> intersection(const double& a, const double& b) //droite y=ax+b (traiter aussi le cas d'une droite verticale)
+    virtual vector<double> intersectio(const double& a, const double& b) //droite y=ax+b (traiter aussi le cas d'une droite verticale)
     {
         for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
         {
@@ -120,6 +137,17 @@ class obstacle
         }
         return {};
     }
+    virtual vector<double> intersection(const vector<double>& a, const vector<double>& v)
+    {
+        for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
+        {
+            vector<double> arete = aretes[i];
+            if ((v[0]*arete[1]-v[1]*arete[0])<1e-3) //vecteurs colinéaires 
+            {
+                
+            }
+        }
+    }
 };
 
 ostream& operator<<(ostream& os, const obstacle& O) 
@@ -135,14 +163,14 @@ ostream& operator<<(ostream& os, const obstacle& O)
 class arc
 {
     protected:
-    vector<double> sommet1;
-    vector<double> sommet2;
-    double poids;
-    public:
-    double acces_poids() const {return poids;}
+    vector<double> sommet1; //coordonnées sommet 1
+    vector<double> sommet2; //coordonnées sommet 2
+    int num1;  //numérotation sommet 1
+    int num2;  //numérotation sommet 2
+    double poids; //poids de l'arc
 };
 
-class graph
+class graph : public arc
 {
     protected:
     vector<arc> arcs;
@@ -154,9 +182,14 @@ class graph
         nb_arcs=arcs.size();
         for (int i=0;i<nb_arcs;++i)
         {
-            if (arcs[i].acces_poids() <1e-5)
+            if (poids < 1e-5)
             {
                 arcs.erase(arcs.begin()+i);
+                matrice_adj[num1][num2] = 0;
+            }
+            else
+            {
+                matrice_adj[num1][num2] = poids;
             }
         }
     }
