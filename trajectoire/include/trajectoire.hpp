@@ -146,6 +146,7 @@ class graph
 {
     protected:
     vector<arc> arcs;
+    vector<vector<double>> matrice_adj;
     int nb_arcs;
     public:
     graph (const vector<arc>& u) : arcs(u)
@@ -155,8 +156,8 @@ class graph
         {
             if (arcs[i].acces_poids() <1e-5)
             {
-                
+                arcs.erase(arcs.begin()+i);
             }
         }
     }
-}
+};
