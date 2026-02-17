@@ -196,6 +196,6 @@ class scene : public graph<T>
     public:
     scene (const vector<arc<T>>& u, vector<T> a, vector<T> b, int n, int id1, int id2) : graph<T>(u, n), depart(a), arrivee(b)
     {
-        solution = dijkstra(this->matrice_adj, id1, id2);
+        solution = dijkstra(this->matrice_adj, id1, id2); // id1 et id2 numéros de sommets départ et arrivée
     }
 };
