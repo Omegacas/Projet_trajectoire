@@ -2,11 +2,13 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "dijkstra.hpp"
 
 using namespace std;
 
 //outils vecteurs
-ostream& operator<<(ostream& os ,const vector<double>& v)
+template <typename T>
+ostream& operator<<(ostream& os ,const vector<T>& v)
 {
     int n = v.size();
     if (v.empty()) {
@@ -23,10 +25,11 @@ ostream& operator<<(ostream& os ,const vector<double>& v)
     return os ;
 }
 
-vector<double> operator+(const vector<double>& u, const vector<double>& v)
+template <typename T>
+vector<T> operator+(const vector<T>& u, const vector<T>& v)
 {
     int n=u.size();
-    vector<double> w(n);
+    vector<T> w(n);
     for (int i=0;i<n; i++) 
     {
         w[i]=u[i]+v[i];
@@ -34,10 +37,11 @@ vector<double> operator+(const vector<double>& u, const vector<double>& v)
     return w;
 }
 
-vector<double> operator-(const vector<double>& u, const vector<double>& v)
+template <typename T>
+vector<T> operator-(const vector<T>& u, const vector<T>& v)
 {
     int n=u.size();
-    vector<double> w(n);
+    vector<T> w(n);
     for (int i=0;i<n; i++) 
     {
         w[i]=u[i]-v[i];
@@ -45,21 +49,24 @@ vector<double> operator-(const vector<double>& u, const vector<double>& v)
     return w;
 }
 
-vector<double> operator*(const double& s, const vector<double>& u) 
+template <typename T>
+vector<T> operator*(const T& s, const vector<T>& u) 
 {
-    vector<double> w = u;
+    vector<T> w = u;
     for (auto& wi : w) wi *= s;
     return w;
 }
 
-vector<double> operator*(const vector<double>& u, const double& s) 
+template <typename T>
+vector<T> operator*(const vector<T>& u, const T& s) 
 {
     return s * u;
 }
 
-double operator|(const vector<double>& u, const vector<double>& v)
+template <typename T>
+T operator|(const vector<T>& u, const vector<T>& v)
 {
-    double ps = 0;
+    T ps = 0;
     int n = min(u.size(), v.size());
     for (int i = 0;i<n;i++)
     {
@@ -68,27 +75,29 @@ double operator|(const vector<double>& u, const vector<double>& v)
     return ps;
 }
 
-double norme2(const vector<double>& u) 
+template <typename T>
+T norme2(const vector<T>& u) 
 {
     return sqrt(u | u);
 }
 
 // classe obstacle
+template <typename T>
 class obstacle
 {
     protected:
-    vector<vector<double>> sommets; //sommets dans le sens trigo
-    vector<vector<double>> aretes; //vecteurs orientés dans le sens trigo
-    vector<vector<double>> normales; //normales des sommets SiSi+1
+    vector<vector<T>> sommets; //sommets dans le sens trigo
+    vector<vector<T>> aretes; //vecteurs orientés dans le sens trigo
+    vector<vector<T>> normales; //normales des sommets SiSi+1
     int nbsommets;
     public :
-    obstacle (const vector<vector<double>>& u): sommets(u)
+    obstacle (const vector<vector<T>>& u): sommets(u)
     {
         nbsommets = sommets.size();
         for (int i = 0; i<nbsommets; ++i)
         {
-            vector<double> v = sommets[i];
-            vector<double> w = sommets [(i+1)%nbsommets]; //si i+1=nbsommets, on retombe au sommet 0
+            vector<T> v = sommets[i];
+            vector<T> w = sommets [(i+1)%nbsommets]; //si i+1=nbsommets, on retombe au sommet 0
             aretes[i] = w-v;
             normales[i][0] = -aretes[i][1];
             normales[i][1] = aretes[i][0];
@@ -102,15 +111,15 @@ class obstacle
             out << sommets[i];
         }
     }
-    virtual vector<double> intersection(const vector<double>& a, const vector<double>& v)
+    virtual vector<T> intersection(const vector<T>& a, const vector<T>& v)
     {
         for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
         {
-            vector<double> arete = aretes[i];
-            vector<double> s = sommets[i];
+            vector<T> arete = aretes[i];
+            vector<T> s = sommets[i];
             if ((v[0]*arete[1]-v[1]*arete[0])<1e-5) //vecteurs directeurs de la droite et de l'arete colinéaires 
             {
-                vector<double> w = s-a;
+                vector<T> w = s-a;
                 if ((v[0]*w[1]-v[1]*w[0])<1e-5) //teste si droite superposée avec l'arête
                 {
                     return s; // s est un des points d'intersection (il y en a une infinité)
@@ -122,8 +131,8 @@ class obstacle
             }
             else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
             {
-                double t = ((s[0]-a[0])*(-arete[1])+(s[1]-a[1])*arete[0])/(arete[0]*v[1]-arete[1]*v[0]);
-                vector<double> inter;
+                T t = ((s[0]-a[0])*(-arete[1])+(s[1]-a[1])*arete[0])/(arete[0]*v[1]-arete[1]*v[0]);
+                vector<T> inter;
                 inter[0] = t*v[0] + a[0];  //pt d'intersection
                 inter[1] = t*v[1] + a[1];
                 if (sommets[i][1]<inter[1] && sommets[i+1][1]>inter[1]) //on vérifie que le point d'intersection est sur le côté
@@ -135,7 +144,8 @@ class obstacle
     }
 };
 
-ostream& operator<<(ostream& os, const obstacle& O) 
+template <typename T>
+ostream& operator<<(ostream& os, const obstacle<T>& O) 
 {
     O.print(os);
     return os;
@@ -145,21 +155,23 @@ ostream& operator<<(ostream& os, const obstacle& O)
 
 //classe arc
 
+template <typename T>
 class arc
 {
     protected:
-    vector<double> sommet1; //coordonnées sommet 1
-    vector<double> sommet2; //coordonnées sommet 2
+    vector<T> sommet1; //coordonnées sommet 1
+    vector<T> sommet2; //coordonnées sommet 2
     int num1;  //numérotation sommet 1
     int num2;  //numérotation sommet 2
-    double poids; //poids de l'arc
+    T poids; //poids de l'arc
 };
 
-class graph : public arc
+template <typename T>
+class graph : public arc<T>
 {
     protected:
-    vector<arc> arcs;
-    vector<vector<double>> matrice_adj;
+    vector<T> arcs;
+    vector<vector<T>> matrice_adj;
     int nb_arcs;
     public:
     graph (const vector<arc>& u) : arcs(u)
@@ -180,12 +192,17 @@ class graph : public arc
     }
 };
 
-class scene : public arc
+template <typename T>
+class scene : public graph<T>
 {
     protected:
-    vector<double> depart;
-    vector<double> arrivee;
+    vector<T> depart;
+    vector<T> arrivee;
     vector<arc> arcs;
-    vector<int> solution;
-    scene (const vector<arc>& u, ) : arcs(u)
-}
+    vector<vector<T>> matrice_adj;
+    vector<T> solution;
+    scene (const vector<arc>& u, vector<T> a, vector<T> b, vector<vector<T>> m) : arcs(u), depart(a), arrivee(b), matrice_adj(m)
+    {
+        solution = dijkstra()
+    }
+};
