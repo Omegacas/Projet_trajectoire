@@ -154,7 +154,7 @@ class obstacle
             else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
             {
                 double t = ((s[0]-a[0])*(-arete[1])+(s[1]-a[1])*arete[0])/(arete[0]*v[1]-arete[1]*v[0]);
-                //pt d'intersection est vt+a;
+                //pt d'intersection est vt+a
             }
         }
     }
