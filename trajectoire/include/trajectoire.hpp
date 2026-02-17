@@ -203,6 +203,6 @@ class scene : public graph<T>
     vector<T> solution;
     scene (const vector<arc>& u, vector<T> a, vector<T> b, vector<vector<T>> m) : arcs(u), depart(a), arrivee(b), matrice_adj(m)
     {
-        solution = dijkstra()
+        solution = dijkstra(matrice_adj, depart, arrivee);
     }
 };
