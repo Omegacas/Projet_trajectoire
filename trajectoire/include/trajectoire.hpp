@@ -102,41 +102,6 @@ class obstacle
             out << sommets[i];
         }
     }
-    virtual vector<double> intersectio(const double& a, const double& b) //droite y=ax+b (traiter aussi le cas d'une droite verticale)
-    {
-        for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
-        {
-            vector<double> arete = aretes[i];
-            vector<double> s = sommets[i];
-            if (aretes[i][0]>1e-5) //cas où le côté a une pente non nulle
-            {
-                double pente_arete = arete[1]/arete[0];
-                double ord = s[1] - pente_arete*s[0]; //calcul de l'ordonnée à l'origine de la droite de l'arete
-                if (abs(pente_arete - a)<1e-5) //teste si le côté et la droite ont la même pente
-                {
-                    if (abs(ord-b)<1e-5)// teste si même ordonnée à l'origine 
-                    {
-                        return s;
-                    }
-                }
-                else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
-                {
-                    vector<double> point_intersection;
-                    point_intersection[0] = (b-ord)/(pente_arete - a); //formule de cramer pour résoudre le système 2x2
-                    point_intersection[1] = (b*pente_arete-a*ord)/(pente_arete - a);
-                    if (sommets[i][1]<point_intersection[1] && sommets[i+1][1]>point_intersection[1]) //on vérifie que le point d'intersection est sur le côté
-                    {
-                        return point_intersection;
-                    }
-                }
-            }
-            else //cas où le côté est vertical
-            {
-
-            }
-        }
-        return {};
-    }
     virtual vector<double> intersection(const vector<double>& a, const vector<double>& v)
     {
         for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
@@ -150,11 +115,21 @@ class obstacle
                 {
                     return s; // s est un des points d'intersection (il y en a une infinité)
                 }
+                else
+                {
+                    return {}; //vecteur vide : pas de pt d'intersection
+                }
             }
             else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
             {
                 double t = ((s[0]-a[0])*(-arete[1])+(s[1]-a[1])*arete[0])/(arete[0]*v[1]-arete[1]*v[0]);
-                //pt d'intersection est vt+a
+                vector<double> inter;
+                inter[0] = t*v[0] + a[0];  //pt d'intersection
+                inter[1] = t*v[1] + a[1];
+                if (sommets[i][1]<inter[1] && sommets[i+1][1]>inter[1]) //on vérifie que le point d'intersection est sur le côté
+                    {
+                        return inter;
+                    }
             }
         }
     }
@@ -204,3 +179,13 @@ class graph : public arc
         }
     }
 };
+
+class scene : public arc
+{
+    protected:
+    vector<double> depart;
+    vector<double> arrivee;
+    vector<arc> arcs;
+    vector<int> solution;
+    scene (const vector<arc>& u, ) : arcs(u)
+}
