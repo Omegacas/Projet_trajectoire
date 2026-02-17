@@ -81,23 +81,24 @@ T norme2(const vector<T>& u)
     return sqrt(u | u);
 }
 
-// classe obstacle
 template <typename T>
 class obstacle
 {
     protected:
-    vector<vector<T>> sommets; //sommets dans le sens trigo
-    vector<vector<T>> aretes; //vecteurs orientés dans le sens trigo
-    vector<vector<T>> normales; //normales des sommets SiSi+1
+    vector<vector<T>> sommets; 
+    vector<vector<T>> aretes; 
+    vector<vector<T>> normales; 
     int nbsommets;
     public :
     obstacle (const vector<vector<T>>& u): sommets(u)
     {
         nbsommets = sommets.size();
+        aretes.resize(nbsommets);
+        normales.assign(nbsommets, vector<T>(2));
         for (int i = 0; i<nbsommets; ++i)
         {
             vector<T> v = sommets[i];
-            vector<T> w = sommets [(i+1)%nbsommets]; //si i+1=nbsommets, on retombe au sommet 0
+            vector<T> w = sommets [(i+1)%nbsommets];
             aretes[i] = w-v;
             normales[i][0] = -aretes[i][1];
             normales[i][1] = aretes[i][0];
@@ -113,34 +114,35 @@ class obstacle
     }
     virtual vector<T> intersection(const vector<T>& a, const vector<T>& v)
     {
-        for (int i = 0; i<nbsommets; ++i) //boucle sur les côtés de l'obstacle
+        for (int i = 0; i<nbsommets; ++i)
         {
             vector<T> arete = aretes[i];
             vector<T> s = sommets[i];
-            if ((v[0]*arete[1]-v[1]*arete[0])<1e-5) //vecteurs directeurs de la droite et de l'arete colinéaires 
+            if (abs(v[0]*arete[1]-v[1]*arete[0]) < 1e-5) 
             {
                 vector<T> w = s-a;
-                if ((v[0]*w[1]-v[1]*w[0])<1e-5) //teste si droite superposée avec l'arête
+                if (abs(v[0]*w[1]-v[1]*w[0]) < 1e-5) 
                 {
-                    return s; // s est un des points d'intersection (il y en a une infinité)
+                    return s; 
                 }
                 else
                 {
-                    return {}; //vecteur vide : pas de pt d'intersection
+                    return {}; 
                 }
             }
-            else //il y a nécessairement un unique pt d'intersection entre la droite et le côté qu'on a prolongé en une droite
+            else 
             {
                 T t = ((s[0]-a[0])*(-arete[1])+(s[1]-a[1])*arete[0])/(arete[0]*v[1]-arete[1]*v[0]);
-                vector<T> inter;
-                inter[0] = t*v[0] + a[0];  //pt d'intersection
+                vector<T> inter(2);
+                inter[0] = t*v[0] + a[0]; 
                 inter[1] = t*v[1] + a[1];
-                if (sommets[i][1]<inter[1] && sommets[i+1][1]>inter[1]) //on vérifie que le point d'intersection est sur le côté
-                    {
-                        return inter;
-                    }
+                if (sommets[i][1]<inter[1] && sommets[(i+1)%nbsommets][1]>inter[1]) 
+                {
+                    return inter;
+                }
             }
         }
+        return {};
     }
 };
 
@@ -151,42 +153,34 @@ ostream& operator<<(ostream& os, const obstacle<T>& O)
     return os;
 }
 
-//penser à réindexer les sommets des obstacles lorsqu'on les mettra tous dans un seul graphe
-
-//classe arc
-
 template <typename T>
 class arc
 {
-    protected:
-    vector<T> sommet1; //coordonnées sommet 1
-    vector<T> sommet2; //coordonnées sommet 2
-    int num1;  //numérotation sommet 1
-    int num2;  //numérotation sommet 2
-    T poids; //poids de l'arc
+    public:
+    vector<T> sommet1; 
+    vector<T> sommet2; 
+    int num1;  
+    int num2;  
+    T poids; 
 };
 
 template <typename T>
-class graph : public arc<T>
+class graph
 {
     protected:
-    vector<T> arcs;
+    vector<arc<T>> arcs;
     vector<vector<T>> matrice_adj;
     int nb_arcs;
     public:
-    graph (const vector<arc>& u) : arcs(u)
+    graph (const vector<arc<T>>& u, int n) : arcs(u)
     {
         nb_arcs=arcs.size();
-        for (int i=0;i<nb_arcs;++i)
+        matrice_adj.assign(n, vector<T>(n, 0));
+        for (int i=0; i<nb_arcs; ++i)
         {
-            if (poids < 1e-5)
+            if (arcs[i].poids >= 1e-5)
             {
-                arcs.erase(arcs.begin()+i);
-                matrice_adj[num1][num2] = 0;
-            }
-            else
-            {
-                matrice_adj[num1][num2] = poids;
+                matrice_adj[arcs[i].num1][arcs[i].num2] = arcs[i].poids;
             }
         }
     }
@@ -198,11 +192,10 @@ class scene : public graph<T>
     protected:
     vector<T> depart;
     vector<T> arrivee;
-    vector<arc> arcs;
-    vector<vector<T>> matrice_adj;
-    vector<T> solution;
-    scene (const vector<arc>& u, vector<T> a, vector<T> b, vector<vector<T>> m) : arcs(u), depart(a), arrivee(b), matrice_adj(m)
+    vector<int> solution;
+    public:
+    scene (const vector<arc<T>>& u, vector<T> a, vector<T> b, int n, int id1, int id2) : graph<T>(u, n), depart(a), arrivee(b)
     {
-        solution = dijkstra()
+        solution = dijkstra(this->matrice_adj, id1, id2);
     }
 };
