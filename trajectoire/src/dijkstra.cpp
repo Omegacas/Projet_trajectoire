@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "../includer/lecture_scene.hpp"
 
 using namespace std ; 
 

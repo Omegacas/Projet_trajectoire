@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
-#include "../include/dijkstra.hpp"
-#include "../include/trajectoire.hpp"
-
+#include "../includer/dijkstra.hpp"
+#include "../includer/trajectoire.hpp"
+#include "../includer/lecture_scene.hpp"
 
 using namespace std ;
 
