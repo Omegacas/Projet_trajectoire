@@ -91,7 +91,37 @@ class obstacle
     vector<vector<T>> normales; 
     int nbsommets;
     public :
-    obstacle (const vector<vector<T>>& u): sommets(u)
+    virtual vector<T> intersection(const vector<T>& a, const vector<T>& v)
+{
+    const double epsilon = 1e-7;
+
+    for (int i = 0; i < nbsommets; ++i)
+    {
+        vector<T> s1 = sommets[i];
+        vector<T> s2 = sommets[(i + 1) % nbsommets];
+        
+        // Coordonnées du vecteur de l'arête (mur)
+        T dx_arete = s2[0] - s1[0];
+        T dy_arete = s2[1] - s1[1];
+
+        // Déterminant du système
+        T det = v[0] * (-dy_arete) - v[1] * (-dx_arete);
+
+        if (abs(det) < epsilon) continue; // Les segments sont parallèles
+
+        // Calcul de t (position sur la trajectoire) et u (position sur l'arête)
+        T t = ((s1[0] - a[0]) * (-dy_arete) + (s1[1] - a[1]) * dx_arete) / det;
+        T u = (v[0] * (s1[1] - a[1]) - v[1] * (s1[0] - a[0])) / det;
+
+        // Condition de collision réelle
+        if (t > epsilon && t < (1.0 - epsilon) && u > -epsilon && u < (1.0 + epsilon))
+        {
+            return { a[0] + t * v[0], a[1] + t * v[1] }; 
+        }
+    }
+    return {}; 
+}
+    /*obstacle (const vector<vector<T>>& u): sommets(u)
     {
         nbsommets = sommets.size();
         aretes.resize(nbsommets);
@@ -144,8 +174,9 @@ class obstacle
             }
         }
         return {};
-    }
+    }*/
 };
+
 
 template <typename T>
 ostream& operator<<(ostream& os, const obstacle<T>& O) 
