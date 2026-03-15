@@ -1,5 +1,5 @@
 % 1. On lit le tableau (en gardant tout en texte pour l'instant)
-T = readtable('../trajectoire/OBSTACLE/Obstacles_1.csv', 'Delimiter', '|', 'ReadVariableNames', true);
+T = readtable('C:\Users\antoi\OneDrive\Desktop\Projet_trajectoire\trajectoire\OBSTACLE\Obstacles_1.csv', 'Delimiter', '|', 'ReadVariableNames', true);
 
 % 2. On récupère la cellule de l'Obstacle_3 (la ligne 1 par exemple)
 Nombre_obstacle=size(T)

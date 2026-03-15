@@ -74,8 +74,6 @@ graph<double> generer_graphe_complet(const DataRoute& route) {
             
             if (est_accessible) {
                 a.poids = sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
-            } else {
-                a.poids = 9999990.0; // Poids dissuasif si obstacle
             }
 
             global_graph.arcs.push_back(a);
@@ -88,13 +86,35 @@ graph<double> generer_graphe_complet(const DataRoute& route) {
 int main() {
     DataRoute maRoute = lireFichier("../OBSTACLE/Obstacles_1.csv");
     
-    // On utilise notre nouvelle fonction qui respecte les classes du groupe
-    graph<double> monGraphe = generer_graphe_complet(maRoute);
+    // 1. On récupère les points pour pouvoir faire la correspondance plus tard
+    vector<Point> tous_les_points;
+    tous_les_points.push_back(maRoute.depart);
+    for (const auto& obs : maRoute.obstacles) {
+        for (const auto& p : obs) tous_les_points.push_back(p);
+    }
+    tous_les_points.push_back(maRoute.arrivee);
+
+    // 2. Génération et calcul (comme avant)
+    graph<double> tempGraph = generer_graphe_complet(maRoute);
+    int n = tempGraph.nb_sommets;
+    graph<double> monGraphe(tempGraph.arcs, n);
     
-    cout << "Graphe genere avec " << monGraphe.arcs.size() << " arcs (liaisons possibles et obstacles)." << endl;
-    
-    // Le point de départ est l'index 0, l'arrivée est l'index size-1
-    cout << "Indice Depart: 0 | Indice Arrivee: " << (monGraphe.nb_sommets - 1) << endl;
-    cout << "Chemin trouvé: " << dijkstra(monGraphe.matrice_adj, 0, monGraphe.nb_sommets - 1) << endl; // Appel de Dijkstra sur le graphe généré
+    vector<int> resultat = dijkstra(monGraphe.matrice_adj, 0, n - 1);
+
+    // 3. AFFICHAGE DES COORDONNÉES
+    if (resultat.empty()) {
+        cout << "Aucun chemin trouvé." << endl;
+    } else {
+        cout << "--- TRAJECTOIRE CALCULEE ---" << endl;
+        for (int i = 0; i < resultat.size(); ++i) {
+            int index_sommet = resultat[i];
+            Point p = tous_les_points[index_sommet];
+            
+            cout << "Point " << i << " (Sommet " << index_sommet << ") : "
+                 << "x = " << p.x << ", y = " << p.y << endl;
+        }
+        cout << "----------------------------" << endl;
+    }
+
     return 0;
 }
