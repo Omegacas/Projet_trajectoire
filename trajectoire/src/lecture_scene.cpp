@@ -12,18 +12,18 @@ struct Point {
 struct DataRoute {
     Point depart;
     Point arrivee;
-    std::vector<std::vector<Point>> obstacles;
-    std::vector<Point> chemin;
+    vector<vector<Point>> obstacles;
+    vector<Point> chemin;
 };
 
-std::vector<Point> parsePoints(std::string str) {
-    std::vector<Point> points;
+vector<Point> parsePoints(string str) {
+    vector<Point> points;
     // On remplace les caractères spéciaux par des espaces pour faciliter l'extraction
     for (char &c : str) {
         if (c == '(' || c == ')' || c == ',') c = ' ';
     }
     
-    std::stringstream ss(str);
+    stringstream ss(str);
     double x, y;
     while (ss >> x >> y) {
         points.push_back({x, y});
@@ -31,21 +31,21 @@ std::vector<Point> parsePoints(std::string str) {
     return points;
 }
 
-void lireFichier(std::string nomFichier) {
-    std::ifstream file(nomFichier);
-    std::string line;
+void lireFichier(string nomFichier) {
+    ifstream file(nomFichier);
+    string line;
 
     // 1. Sauter l'en-tête
-    std::getline(file, line);
+    getline(file, line);
 
     // 2. Lire la ligne de données
-    if (std::getline(file, line)) {
-        std::stringstream ss(line);
-        std::string segment;
-        std::vector<std::string> colonnes;
+    if (getline(file, line)) {
+        stringstream ss(line);
+        string segment;
+        vector<string> colonnes;
 
         // Découpage par le caractère '|'
-        while (std::getline(ss, segment, '|')) {
+        while (getline(ss, segment, '|')) {
             colonnes.push_back(segment);
         }
 
